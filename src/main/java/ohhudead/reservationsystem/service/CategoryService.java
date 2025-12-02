@@ -45,7 +45,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional(readOnly = true)
+@Transactional
 public class CategoryService {
 
     private final ProductRepository productRepository;

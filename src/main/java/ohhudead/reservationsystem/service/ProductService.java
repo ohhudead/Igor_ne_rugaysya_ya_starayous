@@ -7,6 +7,7 @@ import ohhudead.reservationsystem.dto.ProductRequest;
 import ohhudead.reservationsystem.dto.ProductResponse;
 import ohhudead.reservationsystem.entity.Product;
 import ohhudead.reservationsystem.entity.Category;
+import ohhudead.reservationsystem.exception.ResourceNotFoundException;
 import ohhudead.reservationsystem.mapper.ProductMapper;
 import ohhudead.reservationsystem.repository.CategoryRepository;
 import ohhudead.reservationsystem.repository.ProductRepository;
@@ -25,7 +26,7 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
 
-    @Transactional
+
     public List<ProductResponse> getAll(Long categoryId){
         log.info("Get products, categoryId={}", categoryId);
 
@@ -41,10 +42,7 @@ public class ProductService {
 
     public ProductResponse getById(Long id) {
         log.info("Get product by id={}", id);
-
-
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found: " + id));
+        Product product = findProductOrThrow(id);
         return productMapper.toResponse(product);
     }
 
@@ -52,9 +50,7 @@ public class ProductService {
     public ProductResponse create(ProductRequest request) {
         log.info("Create product: {}", request);
 
-        Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found: " + request.getCategoryId()));
-
+        Category category = findCategoryOrThrow(request.getCategoryId());
         Product product = productMapper.toEntity(request);
         product.setCategory(category);
 
@@ -65,8 +61,7 @@ public class ProductService {
     public ProductResponse update(Long id, ProductRequest request) {
         log.info("Update product id={}, request={}", id, request);
 
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found: " + id));
+        Product product = findProductOrThrow(id);
 
         if(request.getName() != null){
             product.setName(request.getName());
@@ -78,8 +73,7 @@ public class ProductService {
             product.setInStock(request.getInStock());
         }
         if(request.getCategoryId() != null) {
-            Category category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new RuntimeException("Category not found: " + request.getCategoryId()));
+            Category category = findCategoryOrThrow(request.getCategoryId());
             product.setCategory(category);
         }
 
@@ -91,6 +85,15 @@ public class ProductService {
     public void delete(Long id){
         log.info("Delete product id={}", id);
         productRepository.deleteById(id);
+    }
+
+    private Product findProductOrThrow(Long id){
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", id));
+    }
+    private Category findCategoryOrThrow(Long id){
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category", id));
     }
 
 }
