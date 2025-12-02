@@ -48,7 +48,7 @@ import java.util.List;
 @Transactional
 public class CategoryService {
 
-    private final ProductRepository productRepository;
+    //private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
 
@@ -88,12 +88,13 @@ public class CategoryService {
     public void delete(Long id) {
         log.info("Delete category id={}", id);
 
-        if (!categoryRepository.existsById(id)){
-            throw new ResourceNotFoundException("Category", id);
-        }
-        if (productRepository.existByCategoryId(id)) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category", id));
+
+        if(!category.getProducts().isEmpty()) {
             throw new CategoryDeleteException(id);
         }
+
         categoryRepository.deleteById(id);
     }
 

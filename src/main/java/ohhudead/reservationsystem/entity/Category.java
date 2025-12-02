@@ -2,6 +2,8 @@ package ohhudead.reservationsystem.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.List;
+import java.util.ArrayList;
 
 // TODO [PHASE 1]: Создать остальные JPA Entity классы
 // - Customer (customers) - клиенты магазина
@@ -35,6 +37,9 @@ public class Category {
 
     @Column(name = "category_name", nullable = false, unique = true)
     private String name;
+
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    private List<Product> products = new ArrayList<>();
 
     // TODO [PHASE 1]: Добавить связь @OneToMany с Product
     // Вопросы для понимания:
