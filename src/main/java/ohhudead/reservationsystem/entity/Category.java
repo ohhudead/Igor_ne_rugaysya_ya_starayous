@@ -39,6 +39,7 @@ public class Category {
     private String name;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    @Builder.Default
     private List<Product> products = new ArrayList<>();
 
     // TODO [PHASE 1]: Добавить связь @OneToMany с Product

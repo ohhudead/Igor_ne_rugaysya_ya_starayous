@@ -3,6 +3,10 @@ package ohhudead.reservationsystem.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ohhudead.reservationsystem.entity.Category;
+import ohhudead.reservationsystem.dto.CategoryRequest;
+import ohhudead.reservationsystem.dto.CategoryResponse;
+import ohhudead.reservationsystem.mapper.CategoryMapper;
+import ohhudead.reservationsystem.exception.CategoryAlreadyExistsException;
 import ohhudead.reservationsystem.exception.CategoryDeleteException;
 import ohhudead.reservationsystem.exception.ResourceNotFoundException;
 import ohhudead.reservationsystem.repository.CategoryRepository;
@@ -48,54 +52,68 @@ import java.util.List;
 @Transactional
 public class CategoryService {
 
-    //private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
+    private final CategoryMapper categoryMapper;
 
 
-    public List<Category> getAll() {
+    public List<CategoryResponse> getAll() {
         log.info("Getting all categories");
-        return categoryRepository.findAll();
+        return categoryRepository.findAll()
+                .stream()
+                .map(categoryMapper::toResponse)
+                .toList();
     }
 
 
-    public Category getById(Long id) {
+    public CategoryResponse getById(Long id) {
         log.info("Get category by id={}", id);
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Category", id));
+        Category category = findById(id);
+        return categoryMapper.toResponse(category);
     }
 
     @Transactional
-    public Category create(Category category) {
-        log.info("Creating category with name={}", category.getName());
-        return categoryRepository.save(category);
+    public CategoryResponse create(CategoryRequest request) {
+        log.info("Creating category with name={}", request.getName());
+
+        if (categoryRepository.existsByNameIgnoreCase(request.getName())){
+            throw new CategoryAlreadyExistsException(request.getName());
+        }
+        Category category = categoryMapper.toEntity(request);
+        category = categoryRepository.save(category);
+        return categoryMapper.toResponse(category);
 
     }
 
-
     @Transactional
-    public Category update(Long id, Category request) {
+    public CategoryResponse update(Long id, CategoryRequest request) {
         log.info("Update category id{}, request={}", id, request);
 
-        Category existing = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Category", id));
+        Category existing = findById(id);
 
+        categoryMapper.updateFromRequest(request, existing);
 
-                existing.setName(request.getName());
-                return categoryRepository.save(existing);
+        existing = categoryRepository.save(existing);
+        return categoryMapper.toResponse(existing);
     }
 
     @Transactional
     public void delete(Long id) {
         log.info("Delete category id={}", id);
 
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Category", id));
+        Category category = findById(id);
 
-        if(!category.getProducts().isEmpty()) {
+        Long productsCount = productRepository.countByCategoryId(id);
+        if(productsCount > 0){
             throw new CategoryDeleteException(id);
         }
 
-        categoryRepository.deleteById(id);
+        categoryRepository.delete(category);
+    }
+
+    private Category findById(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category", id));
     }
 
     // TODO [PHASE 4]: Реализовать сложную бизнес-логику для других сервисов

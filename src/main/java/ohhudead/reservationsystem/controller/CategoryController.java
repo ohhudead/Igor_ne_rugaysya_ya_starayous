@@ -1,8 +1,11 @@
 package ohhudead.reservationsystem.controller;
 
 import lombok.RequiredArgsConstructor;
+import ohhudead.reservationsystem.dto.CategoryRequest;
+import ohhudead.reservationsystem.dto.CategoryResponse;
 import ohhudead.reservationsystem.entity.Category;
 import ohhudead.reservationsystem.service.CategoryService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,26 +49,28 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public List<Category> getAll() {
+    public List<CategoryResponse> getAll() {
         return categoryService.getAll();
     }
 
     @PostMapping
-    public Category create(@RequestBody Category category) {
-        return categoryService.create(category);
+    public CategoryResponse create(@RequestBody CategoryRequest request) {
+        return categoryService.create(request);
     }
 
     @GetMapping("/{id}")
-    public Category getById(@PathVariable Long id) {
+    public CategoryResponse getById(@PathVariable Long id) {
         return categoryService.getById(id);
     }
 
     @PutMapping("/{id}")
-    public Category update(@PathVariable Long id, @RequestBody Category category) {
-        return categoryService.update(id, category);
+    public CategoryResponse update(@PathVariable Long id,
+                                   @RequestBody CategoryRequest request) {
+        return categoryService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         categoryService.delete(id);
     }
