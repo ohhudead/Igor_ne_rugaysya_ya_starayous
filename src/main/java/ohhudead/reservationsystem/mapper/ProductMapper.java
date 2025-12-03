@@ -10,15 +10,18 @@ import ohhudead.reservationsystem.dto.ProductRequest;
 import ohhudead.reservationsystem.dto.ProductResponse;
 import ohhudead.reservationsystem.entity.Product;
 
-@Mapper(
-        componentModel = "spring",
-        nullValuePropertyMappingStrategy =  NullValuePropertyMappingStrategy.IGNORE
-)
+@Mapper(componentModel = "spring",nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 
 public interface ProductMapper {
 
-    @Mapping(source = "category.id", target = "categoryId")
-    @Mapping(source = "category.name", target = "categoryName")
+    @Mapping(
+            target = "categoryId",
+            expression = "java(product.getCategory() != null ? product.getCategory().getId() : null)"
+    )
+    @Mapping(
+            target = "categoryName",
+            expression = "java(product.getCategory() != null ? product.getCategory().getName() : null)"
+    )
     ProductResponse toResponse(Product product);
 
     @Mapping(target = "id", ignore = true)
@@ -26,6 +29,7 @@ public interface ProductMapper {
     @Mapping(target = "createdAt", ignore = true)
     Product toEntity(ProductRequest request);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

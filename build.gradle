@@ -29,6 +29,9 @@ dependencies {
     implementation 'org.postgresql:postgresql:42.7.3'
     implementation 'org.liquibase:liquibase-core'
 
+    // Связка Lombok + MapStruct
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
     //Lombok
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'

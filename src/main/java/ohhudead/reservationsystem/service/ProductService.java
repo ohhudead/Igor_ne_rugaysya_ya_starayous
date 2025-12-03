@@ -63,20 +63,12 @@ public class ProductService {
 
         Product product = findProductOrThrow(id);
 
-        if(request.getName() != null){
-            product.setName(request.getName());
-        }
-        if(request.getPrice() != null) {
-            product.setPrice(request.getPrice());
-        }
-        if(request.getInStock() != null) {
-            product.setInStock(request.getInStock());
-        }
         if(request.getCategoryId() != null) {
             Category category = findCategoryOrThrow(request.getCategoryId());
             product.setCategory(category);
         }
 
+        productMapper.updateFromRequest(request, product);
         product = productRepository.save(product);
         return productMapper.toResponse(product);
     }
