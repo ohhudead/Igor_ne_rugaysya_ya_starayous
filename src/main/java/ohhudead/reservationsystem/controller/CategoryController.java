@@ -1,11 +1,14 @@
 package ohhudead.reservationsystem.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import ohhudead.reservationsystem.dto.CategoryRequest;
 import ohhudead.reservationsystem.dto.CategoryResponse;
 import ohhudead.reservationsystem.entity.Category;
 import ohhudead.reservationsystem.service.CategoryService;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,6 +47,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
+@Validated
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -53,25 +57,25 @@ public class CategoryController {
         return categoryService.getAll();
     }
 
-    @PostMapping
-    public CategoryResponse create(@RequestBody CategoryRequest request) {
-        return categoryService.create(request);
-    }
-
     @GetMapping("/{id}")
-    public CategoryResponse getById(@PathVariable Long id) {
+    public CategoryResponse getById(@PathVariable @Positive Long id) {
         return categoryService.getById(id);
     }
 
+    @PostMapping
+    public CategoryResponse createCategory(@Valid @RequestBody CategoryRequest request) {
+        return categoryService.create(request);
+    }
+
     @PutMapping("/{id}")
-    public CategoryResponse update(@PathVariable Long id,
-                                   @RequestBody CategoryRequest request) {
+    public CategoryResponse updateCategory(@PathVariable @Positive Long id,
+                                           @Valid @RequestBody CategoryRequest request) {
         return categoryService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable @Positive Long id) {
         categoryService.delete(id);
     }
 

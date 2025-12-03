@@ -1,8 +1,12 @@
 package ohhudead.reservationsystem.exception;
 
-public class CategoryDeleteException  extends RuntimeException {
+import org.springframework.http.HttpStatus;
 
-    public CategoryDeleteException(Long categoryId) {
-        super("Cannot delete category " +categoryId + "because it has products");
+public class CategoryDeleteException  extends ApplicationException {
+
+    public CategoryDeleteException(Long id) {
+        super(
+                HttpStatus.BAD_REQUEST,
+                "Category with id=" + id + " cannot be deleted because it has products");
     }
 }

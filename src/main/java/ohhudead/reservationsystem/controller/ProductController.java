@@ -1,9 +1,12 @@
 package ohhudead.reservationsystem.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import ohhudead.reservationsystem.dto.ProductRequest;
 import ohhudead.reservationsystem.dto.ProductResponse;
 import ohhudead.reservationsystem.service.ProductService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
+@Validated
 
 public class ProductController {
 
@@ -25,12 +29,12 @@ public class ProductController {
         return productService.getById(id);
     }
     @PostMapping
-    public ProductResponse create(@RequestBody ProductRequest request) {
+    public ProductResponse createProduct(@Valid @RequestBody ProductRequest request) {
         return productService.create(request);
     }
     @PutMapping("/{id}")
-    public ProductResponse update(@PathVariable Long id,
-                                  @RequestBody ProductRequest request) {
+    public ProductResponse updateProduct(@PathVariable @Positive Long id,
+                                         @Valid @RequestBody ProductRequest request) {
         return productService.update(id, request);
     }
     @DeleteMapping("/{id}")

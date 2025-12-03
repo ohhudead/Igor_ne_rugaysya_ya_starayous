@@ -1,8 +1,14 @@
 package ohhudead.reservationsystem.exception;
 
-public class CategoryAlreadyExistsException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class CategoryAlreadyExistsException extends ApplicationException {
+
     public CategoryAlreadyExistsException(String name) {
-        super("Category with name '" + name + "' already exists");
+        super(
+                HttpStatus.BAD_REQUEST,
+                "Category with name '" + name + "' already exists"
+        );
     }
 
 }

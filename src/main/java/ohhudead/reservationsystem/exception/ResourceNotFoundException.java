@@ -1,8 +1,13 @@
 package ohhudead.reservationsystem.exception;
 
-public class ResourceNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
 
-    public ResourceNotFoundException(String resourceName, Object id) {
-        super("Resource " + resourceName + " not found: " + id);
+public class ResourceNotFoundException extends ApplicationException {
+
+    public ResourceNotFoundException(String resource, Long id) {
+        super(
+                HttpStatus.NOT_FOUND,
+                resource + "with id=" + id + " not found"
+        );
     }
 }
