@@ -38,6 +38,9 @@ public class Category {
     @Column(name = "category_name", nullable = false, unique = true)
     private String name;
 
+    @Column(length = 255)
+    private String description;
+
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     @Builder.Default
     private List<Product> products = new ArrayList<>();

@@ -10,4 +10,6 @@ public class CategoryRequest {
     @NotBlank(message = "Category name must not be blank")
     @Size(max = 255, message = "Category name must be at most 255 characters")
     private String name;
+    private String description;
+
 }
